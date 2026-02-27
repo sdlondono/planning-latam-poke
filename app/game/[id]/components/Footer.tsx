@@ -54,7 +54,7 @@ export default function Footer({
                             disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-blue-500/50
                         `}
               >
-                {card === '☕' ? <CoffeeIcon className="w-5 h-5" /> : card}
+                {card}
               </button>
             ))}
           </div>

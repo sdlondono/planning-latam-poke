@@ -1,3 +1,5 @@
+import React, { useState, useRef, useEffect } from 'react'
+import EmojiPicker, { Theme } from 'emoji-picker-react'
 import { SmileyIcon } from './Icons'
 
 interface JoinGameModalProps {
@@ -19,6 +21,24 @@ export default function JoinGameModal({
   isLoading,
   tShirtCards
 }: JoinGameModalProps) {
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
     <div className="absolute inset-0 z-50 bg-[#1F2937]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4">
       {/* Background Cards (Visual flair - subtle in background of modal) */}
@@ -62,9 +82,31 @@ export default function JoinGameModal({
             >
               Your display name
             </label>
-            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-              <SmileyIcon className="w-6 h-6 hover:text-gray-300 transition-colors cursor-pointer pointer-events-auto" />
+            <div className="absolute inset-y-0 right-4 flex items-center text-gray-400 z-10">
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="hover:text-gray-300 transition-colors cursor-pointer focus:outline-none"
+              >
+                <SmileyIcon className="w-6 h-6" />
+              </button>
             </div>
+
+            {showEmojiPicker && (
+              <div
+                ref={emojiPickerRef}
+                className="absolute right-0 top-12 z-50 shadow-xl rounded-lg"
+              >
+                <EmojiPicker
+                  onEmojiClick={(emojiObject) => {
+                    setDisplayName(displayName + emojiObject.emoji)
+                    setShowEmojiPicker(false)
+                  }}
+                  theme={Theme.DARK}
+                  lazyLoadEmojis={true}
+                />
+              </div>
+            )}
           </div>
 
           {/* Join as Spectator Toggle */}
@@ -92,22 +134,6 @@ export default function JoinGameModal({
           >
             {isLoading ? 'Joining...' : 'Continue to game'}
           </button>
-
-          {/* Footer Links */}
-          <div className="flex justify-between mt-2 px-2">
-            <a
-              href="#"
-              className="text-blue-400 hover:text-blue-300 text-sm font-semibold transition-colors"
-            >
-              Login
-            </a>
-            <a
-              href="#"
-              className="text-blue-400 hover:text-blue-300 text-sm font-semibold transition-colors"
-            >
-              Sign Up
-            </a>
-          </div>
         </div>
       </div>
     </div>

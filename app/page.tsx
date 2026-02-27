@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createDocument } from '@/lib/firestore'
+import EmojiPicker, { Theme } from 'emoji-picker-react'
 
 // Custom combined logo (approximate)
 const Logo = () => (
@@ -81,6 +82,23 @@ export default function Home() {
   const [gameName, setGameName] = useState('')
   const [votingSystem, setVotingSystem] = useState('t-shirts')
   const [isLoading, setIsLoading] = useState(false)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleCreateGame = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -134,9 +152,31 @@ export default function Home() {
             >
               Game&apos;s name
             </label>
-            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-              <SmileyIcon className="w-6 h-6 hover:text-gray-300 transition-colors cursor-pointer pointer-events-auto" />
+            <div className="absolute inset-y-0 right-4 flex items-center text-gray-400 z-10">
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="hover:text-gray-300 transition-colors cursor-pointer focus:outline-none"
+              >
+                <SmileyIcon className="w-6 h-6" />
+              </button>
             </div>
+
+            {showEmojiPicker && (
+              <div
+                ref={emojiPickerRef}
+                className="absolute right-0 top-12 z-50 shadow-xl rounded-lg"
+              >
+                <EmojiPicker
+                  onEmojiClick={(emojiObject) => {
+                    setGameName(gameName + emojiObject.emoji)
+                    setShowEmojiPicker(false)
+                  }}
+                  theme={Theme.DARK}
+                  lazyLoadEmojis={true}
+                />
+              </div>
+            )}
           </div>
 
           {/* Voting System Select */}
@@ -151,12 +191,6 @@ export default function Home() {
               <option value="t-shirts" className="bg-[#1F2937]">
                 T-shirts (XS, S, M, L, XL, ?, ☕)
               </option>
-              <option value="fibonacci" className="bg-[#1F2937]">
-                Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?)
-              </option>
-              <option value="powers-of-2" className="bg-[#1F2937]">
-                Powers of 2 (0, 1, 2, 4, 8, 16, 32, 64, ?)
-              </option>
             </select>
             <label
               htmlFor="voting-system"
@@ -167,16 +201,6 @@ export default function Home() {
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
               <ChevronDownIcon className="w-5 h-5" />
             </div>
-          </div>
-
-          {/* Advanced Settings Link */}
-          <div className="-mt-4">
-            <a
-              href="#"
-              className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-            >
-              Show advanced settings...
-            </a>
           </div>
 
           {/* Create Button */}
