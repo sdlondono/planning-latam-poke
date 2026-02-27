@@ -7,6 +7,7 @@ export interface Player {
 }
 
 export interface GameState {
+  name: string
   isRevealed: boolean
   status: 'voting' | 'revealed'
 }

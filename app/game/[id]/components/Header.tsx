@@ -9,6 +9,7 @@ import {
 interface HeaderProps {
   hasJoined: boolean
   displayName: string
+  displayGameName: string
   isProfileOpen: boolean
   setIsProfileOpen: (isOpen: boolean) => void
   handleSignOut: () => void
@@ -17,6 +18,7 @@ interface HeaderProps {
 export default function Header({
   hasJoined,
   displayName,
+  displayGameName,
   isProfileOpen,
   setIsProfileOpen,
   handleSignOut
@@ -25,10 +27,7 @@ export default function Header({
     <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-[#1F2937]">
       <div className="flex items-center gap-2">
         <LogoSmall />
-        <span className="font-bold text-lg text-white">Test</span>
-        <span className="text-gray-400 text-sm cursor-pointer hover:text-white">
-          v
-        </span>
+        <span className="font-bold text-lg text-white">{displayGameName}</span>
       </div>
 
       <div className="flex items-center gap-4">

@@ -32,6 +32,7 @@ export default function GameClient({ gameId }: { gameId: string }) {
   const tShirtCards = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?', '☕']
 
   const [gameState, setGameState] = useState<GameState>({
+    name: '',
     isRevealed: false,
     status: 'voting'
   })
@@ -227,6 +228,7 @@ export default function GameClient({ gameId }: { gameId: string }) {
 
       <Header
         hasJoined={hasJoined}
+        displayGameName={gameState.name}
         displayName={displayName}
         isProfileOpen={isProfileOpen}
         setIsProfileOpen={setIsProfileOpen}
